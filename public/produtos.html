@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Catalogo de Produtos</title>
+</head>
+<body>
+    <header>
+        <nav class="menu">
+                    <h1 class="logo">GJA!</h1>
+                    <ul>
+                        <li class="botao_nav"><a href="index.html">Home</a></li>
+                        <li class="botao_nav"><a href="produtos.html">Produtos</a></li>
+                        <li class="user-menu-container">
+                            <button class="user-avatar" id="btn-user-avatar" onclick="toggleUserMenu(event)">
+                                <span id="avatar-icon">👤</span>
+                            </button>
+                            <div class="user-dropdown" id="user-dropdown"></div>
+                        </li>
+                    </ul>
+    
+                    <div class="area-busca">
+                        <input type="search" id="barra_busca" placeholder="O que você está procurando?">
+                    </div>
+                </nav>
+    </header>
+
+   <main class="container">
+       <section class="vitrine-container" id="vitrine-jogos">
+           <!-- O JS(index.js) que vai preencher aqui -->
+       </section>
+   </main>
+
+    <script src="index.js"></script>
+</body>
+</html>

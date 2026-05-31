@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="index.css">
+        <title>GJA!</title>
+    </head>
+    <body>
+        <header>
+            <nav class="menu">
+                <h1 class="logo">GJA!</h1>
+                <ul>
+                    <li class="botao_nav"><a href="index.html">Home</a></li>
+                    <li class="botao_nav"><a href="produtos.html">Produtos</a></li>
+                    <li class="user-menu-container">
+                        <button class="user-avatar" id="btn-user-avatar" onclick="toggleUserMenu(event)">
+                            <span id="avatar-icon">👤</span>
+                        </button>
+                        <div class="user-dropdown" id="user-dropdown"></div>
+                    </li>
+                </ul>
+
+                <div class="area-busca">
+                    <input type="search" id="barra_busca" placeholder="O que você está procurando?">
+                </div>
+            </nav>
+        </header>
+
+        <section class="bem_vindo">
+            <h2>Bem-vindo à GJA!</h2>
+            <a href="produtos.html" class="callT-action">Conheça nossos produtos</a>
+        </section>
+
+        
+            <div class="container">
+                <section id="sobre">
+                    <h2>Sobre a GJA!</h2>
+                    <p>A<em><strong> Game já!</strong></em> surge para unir e facilitar o acesso a jogos, de qualquer console, formato digital ou físico. <br>Aqui, você encontrará uma ampla seleção de títulos para todos os gostos, que visa a acessibilidade, levando para você fisica - ou digital - mente o seu jogo favorito.</p>
+                </section>
+                
+                <section id="contato">
+                    <h2>Contatos</h2>
+                    <p>GJA!-SP - (11) 1234-5678 <a href="mailto:contato@gja.com">contato@gja.com</a><br>GJA!-RJ - (21) 1234-5678 <a href="mailto:contato@gja.com">contato@gja.com</a></p>
+                </section>
+            </div>
+
+            <section id="chatbot" class="container" style="margin-top: 20px; margin-bottom: 40px;">
+                <h2>Fale com nosso Assistente</h2>
+                <div id="respostas" style="border: 1px solid #ccc; padding: 15px; height: 250px; overflow-y: auto; margin-bottom: 10px; background-color: #f9f9f9; border-radius: 5px; color: #333;"></div>
+                <form id="form" style="display: flex; gap: 10px;">
+                    <input type="text" id="mensagem" placeholder="Digite sua mensagem..." required style="flex-grow: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <button type="submit" style="padding: 10px 20px; cursor: pointer; border-radius: 5px; background-color: #007bff; color: white; border: none; font-weight: bold;">Enviar</button>
+                </form>
+            </section>
+
+        <footer>
+            <p>2026 Games Já! Todos os direitos reservados. | Projeto de TCC - ETEC Barueri</p>
+        </footer>
+
+        <script src="index.js"></script>
+        <script>// ---------------- Chatbot ---------------- //
+            const form = document.getElementById('form');
+            const respostas = document.getElementById('respostas');
+            const historicoChat = [];
+
+            async function enviarMensagem() {
+                const textoDoUsuario = document.getElementById('mensagem').value;
+                document.getElementById('mensagem').value = '';
+                
+                // Mostrar a mensagem do usuário no HTML
+                respostas.innerHTML += `<p style="margin-bottom: 8px;"><strong>Você:</strong> ${textoDoUsuario}</p>`;
+                respostas.scrollTop = respostas.scrollHeight;
+
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        mensagem: textoDoUsuario,
+                        historico: historicoChat
+                    })
+                });
+
+                const data = await response.json();
+                historicoChat.push({ role: "user", parts: [{ text: textoDoUsuario }] });
+                historicoChat.push({ role: "model", parts: [{ text: data.resposta }] });
+
+                // Mostrar a resposta do modelo no HTML
+                respostas.innerHTML += `<p style="margin-bottom: 15px; color: #0056b3;"><strong>Assistente:</strong> ${data.resposta}</p>`;
+                respostas.scrollTop = respostas.scrollHeight;
+
+                console.log(data);
+            }
+            //----------------------------------------------
+            form.addEventListener('submit', (evento) => {
+                evento.preventDefault();
+                enviarMensagem();
+            });
+        </script>
+    </body>
+</html>

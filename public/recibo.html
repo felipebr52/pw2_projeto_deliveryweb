@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>GJA! - Recibo</title>
+</head>
+<body>
+    <header>
+        <nav class="menu">
+            <h1 class="logo"><a href="index.html" style="color:#fff; text-decoration:none;">GJA!</a></h1>
+            <ul>
+                <li class="botao_nav"><a href="index.html">Home</a></li>
+                <li class="botao_nav"><a href="produtos.html">Produtos</a></li>
+                <li class="user-menu-container">
+                    <button class="user-avatar" id="btn-user-avatar" onclick="toggleUserMenu(event)">
+                        <span id="avatar-icon">👤</span>
+                    </button>
+                    <div class="user-dropdown" id="user-dropdown"></div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container" style="padding-top: 40px;">
+        <div class="recibo-card" id="recibo-conteudo">
+            <p>Carregando recibo...</p>
+        </div>
+    </main>
+
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const container = document.getElementById('recibo-conteudo');
+
+            if (!id) {
+                container.innerHTML = "<p>Pedido não encontrado.</p>";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/pedidos/recibo/${id}`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    container.innerHTML = `<p>${data.error || 'Erro ao carregar recibo.'}</p>`;
+                    return;
+                }
+
+                const p = data.pedido;
+                const itens = data.itens;
+                const dataHora = new Date(p.data).toLocaleString('pt-BR');
+
+                let itensHTML = '';
+                itens.forEach(item => {
+                    itensHTML += `
+                        <div class="recibo-item">
+                            <span>${item.quantidade}x ${item.produto_nome}</span>
+                            <span>R$ ${(item.quantidade * item.preco_unitario).toFixed(2).replace('.', ',')}</span>
+                        </div>
+                    `;
+                });
+                    <!-- Gera as divs que armazenam o recibo -->
+                container.innerHTML = `
+                    <div class="recibo-header">
+                        <h2>RECIBO #${p.id}</h2>
+                        <p>${dataHora}</p>
+                    </div>
+                    <div class="recibo-cliente">
+                        <p><strong>Cliente:</strong> ${p.nome}</p>
+                        <p><strong>E-mail:</strong> ${p.email}</p>
+                        <p><strong>Status:</strong> <span style="color:var(--accent);">${p.status}</span></p>
+                    </div>
+                    <div class="recibo-itens">
+                        ${itensHTML}
+                    </div>
+                    <div class="recibo-footer">
+                        <h3>Total Pago</h3>
+                        <h3>R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</h3>
+                    </div>
+                `;
+            } catch (err) {
+                container.innerHTML = "<p>Erro na conexão com o servidor.</p>";
+            }
+        });
+    </script>
+</body>
+</html>

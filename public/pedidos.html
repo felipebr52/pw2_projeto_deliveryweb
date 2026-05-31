@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>GJA! - Meus Pedidos</title>
+</head>
+<body>
+    <header>
+        <nav class="menu">
+            <h1 class="logo"><a href="index.html" style="color:#fff; text-decoration:none;">GJA!</a></h1>
+            <ul>
+                <li class="botao_nav"><a href="index.html">Home</a></li>
+                <li class="botao_nav"><a href="produtos.html">Produtos</a></li>
+                <li class="user-menu-container">
+                    <button class="user-avatar" id="btn-user-avatar" onclick="toggleUserMenu(event)">
+                        <span id="avatar-icon">👤</span>
+                    </button>
+                    <div class="user-dropdown" id="user-dropdown"></div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container" style="padding-top: 40px;">
+        <h2 style="margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">Histórico de Pedidos</h2>
+        <div id="lista-pedidos" class="pedidos-container">
+            <p>Carregando seus pedidos...</p>
+        </div>
+    </main>
+
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const container = document.getElementById('lista-pedidos');
+            try {
+                const res = await fetch(`/api/pedidos/`);
+                const pedidos = await res.json();
+
+                if (pedidos.length === 0) {
+                    container.innerHTML = "<p>Você ainda não tem nenhum pedido.</p>";
+                    return;
+                }
+
+                container.innerHTML = "";
+                pedidos.forEach(p => {
+                    const data = new Date(p.data).toLocaleString('pt-BR');
+                    container.innerHTML += `
+                        <div class="pedido-card">
+                            <div class="pedido-info">
+                                <h3>Pedido #${p.id}</h3>
+                                <p><strong>Data:</strong> ${data}</p>
+                                <p><strong>Status:</strong> ${p.status}</p>
+                            </div>
+                            <div class="pedido-total">
+                                <h3>Total: R$ ${parseFloat(p.total).toFixed(2).replace('.', ',')}</h3>
+                                <a href="recibo.html?id=${p.id}" class="btn-recibo">Ver Recibo</a>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = "<p>Erro ao carregar o histórico.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
